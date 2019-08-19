@@ -1,0 +1,48 @@
+{
+    "meta": {
+        "label": "Scale cluster up or down",
+        "description": "Changes the number of slave instances in the cluster",
+        "icon": "icon-cloud"
+    },
+
+    "impersonate": false,
+
+    "permissions": [],
+
+    "resultType": "HTML",
+
+    "macroRoles": [
+        {"type":"CLUSTER", "targetParamsKey": "dss_cluster_id", "limitToSamePlugin": true }
+    ],
+
+    "params": [
+        {
+            "name": "dss_cluster_id",
+            "label": "DSS Cluster id (do not change)",
+            "type": "CLUSTER",
+            "description": "Identifier of the current DSS cluster",
+            "mandatory": true
+        },
+        {
+            "name": "core_group_target_instances",
+            "label": "Target instances (core)",
+            "type": "INT",
+            "defaultValue": 3,
+            "description": "Desired number of instances for the CORE instance group (compute + storage slave nodes)"
+        },
+        {
+            "name": "task_group_target_instances",
+            "label": "Target instances (task)",
+            "type": "INT",
+            "defaultValue": 3,
+            "description": "Desired number of instances for the TASK instance group (compute-only slave nodes)"
+        },
+        {
+            "name": "wait_for_completion",
+            "label": "Wait",
+            "type": "BOOLEAN",
+            "defaultValue": false,
+            "description": "Wait for resize operation to complete"
+        }
+    ]
+}

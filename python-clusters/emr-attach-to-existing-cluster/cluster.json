@@ -1,0 +1,35 @@
+{
+    "meta" : {
+        "label" : "EMR cluster (attach to existing cluster)",
+        "description" : "Creates a DSS cluster to attach to an existing EMR cluster",
+        "icon" : "icon-puzzle-piece"
+    },
+
+    "params": [
+        {
+            "name" : "awsRegionId",
+            "label" : "AWS Region",
+            "type": "STRING", 
+            "description": "AWS region id, leave empty to use region of current instance",
+            "mandatory" : false,
+            "defaultValue": "us-east-1"
+        },
+        {
+            "name": "emrClusterId",
+            "label" : "EMR cluster Id",
+            "type": "STRING",
+            "mandatory" : true
+        }
+    ],
+    
+    "actions" : [
+        {
+            "id" : "fetch-nodes-keys",
+            "meta" : {
+                "label" : "Fetch node description keys",
+                "description" : "Fetches node description keys",
+                "icon" : "icon-search"
+            }
+        }
+    ]
+}

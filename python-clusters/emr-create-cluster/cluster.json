@@ -1,0 +1,235 @@
+/* This file is the descriptor for the custom python cluster */
+{
+    /* Meta data for display purposes */
+    "meta" : {
+        "label" : "EMR cluster (create cluster)",
+        "description" : "Creates and manages EMR clusters",
+        "icon" : "icon-puzzle-piece"
+    },
+
+    "params": [
+        {
+            "name" : "awsRegionId",
+            "label" : "AWS Region",
+            "type": "STRING", 
+            "description": "AWS region id. Leave empty to use region of current instance.",
+            "mandatory" : false,
+            "defaultValue": "us-east-1"
+        },
+        {
+            "name": "masterInstanceType",
+            "label" : "Instance type (master)",
+            "type": "STRING",
+            "description": "EC2 instance type for the master instance. Mandatory.",
+            "defaultValue" : "m4.2xlarge",
+            "mandatory" : true
+        },
+        {
+            "name": "coreInstanceType",
+            "label" : "Instance type (core)",
+            "type": "STRING",
+            "description": "Instance type for the CORE instance group (compute + storage slave nodes).",
+            "defaultValue": "m4.2xlarge",
+            "mandatory" : false
+        },
+        {
+            "name": "coreInstanceCount",
+            "type": "INT",
+            "label" : "Instance count (core)",
+            "defaultValue" : 2
+        },
+        {
+            "name": "taskInstanceType",
+            "label" : "Instance type (task)",
+            "type": "STRING",
+            "description": "Instance type for the TASK instance group (compute-only slave nodes).",
+            "defaultValue" : "m4.2xlarge",
+            "mandatory" : false
+        },
+        {
+            "name": "taskInstanceCount",
+            "type": "INT",
+            "label" : "Instance count (task)",
+            "defaultValue" : 0
+        },
+        {
+            "name": "emrVersion",
+            "label" : "EMR Version",
+            "type": "STRING",
+            "defaultValue" : "5.11.1",
+            "description" : "EMR release label, e.g. 5.11.1",
+            "mandatory" : true
+        },
+        {
+            "name": "ebsRootVolumeSize",
+            "label" : "Root volume size",
+            "type": "INT",
+            "description" : "Root device EBS volume size in GB, or 0 to use default size",
+            "defaultValue" : 0
+        },
+
+
+        {
+            "type" : "SEPARATOR",
+            "label":  "Networking"
+        },
+        {
+            "name": "subnetId",
+            "label" : "VPC subnet id",
+            "description": "VPC subnet in which the cluster must be deployed. Leave empty to use that of the current instance.",
+            "type": "STRING",
+            "defaultValue" : "subnet-XXXXXX",
+            "mandatory" : false
+        },
+        {
+            "name" : "additionalSecurityGroups",
+            "label" : "Additional security groups",
+            "type" : "STRING",
+            "mandatory": false,
+            "description" : "Optional. Comma-separated list of security groups ids to add to the nodes"
+        },
+
+
+        {
+            "type" : "SEPARATOR",
+            "label":  "Security"
+        },
+        {
+            "name": "ec2KeyName",
+            "label" : "Key pair name",
+            "type": "STRING",
+            "description" : "Optional but recommended. SSH Keypair to add on the cluster nodes",
+            "mandatory" : false
+        },
+        {
+            "name": "serviceRole",
+            "label" : "Service role",
+            "type": "STRING",
+            "defaultValue": "EMR_DefaultRole",
+            "description" : "IAM role to attach to the service. Must have ability to call required AWS services to create the cluster",
+            "mandatory" : true
+        },
+        {
+            "name": "nodesRole",
+            "label" : "Nodes role",
+            "type": "STRING",
+            "defaultValue": "EMR_EC2_DefaultRole",
+            "description" : "IAM role to attach to the nodes of the cluster. Needs to have ability to call required AWS services from the cluster, like S3",
+            "mandatory" : true
+        },
+        
+        {
+            "type" : "SEPARATOR",
+            "label":  "Hive Metastore"
+        },
+        {
+            "name": "metastoreDBMode",
+            "label" : "Metastore database",
+            "type": "SELECT",
+            "defaultValue" : "TRANSIENT",
+            "selectChoices" : [
+                {"value" : "TRANSIENT", "label" : "Transient (cluster-specific)"},
+                {"value" : "MYSQL", "label" : "External MySQL or Aurora DB"},
+                {"value" : "CUSTOM_JDBC", "label" : "Custom settings (JDBC)"}
+            ],
+            "disabledSelectChoices" : [
+                {"value": "AWS_GLUE_DATA_CATALOG", "label" : "Use AWS Glue Data Catalog"}
+            ],
+            "mandatory" : true
+        },
+        {
+            "name": "metastoreMySQLHost",
+            "label" : "DB host",
+            "visibilityCondition": "model.metastoreDBMode == 'MYSQL'",
+            "type": "STRING",
+            "description" : "Hostname of the MySQL or Aurora host",
+            "mandatory" : false
+        },
+        {
+            "name": "metastoreMySQLUser",
+            "label" : "DB user",
+            "visibilityCondition": "model.metastoreDBMode == 'MYSQL'",
+            "type": "STRING",
+            "description" : "Username of the MySQL or Aurora DB",
+            "mandatory" : false
+        },
+        {
+            "name": "metastoreMySQLPassword",
+            "label" : "DB password",
+            "visibilityCondition": "model.metastoreDBMode == 'MYSQL'",
+            "type": "PASSWORD",
+            "description" : "Password of the MySQL or Aurora DB",
+            "mandatory" : false
+        },
+        {
+            "name": "metastoreJDBCURL",
+            "label" : "Metastore JDBC URL",
+            "visibilityCondition": "model.metastoreDBMode == 'CUSTOM_JDBC'",
+            "type": "STRING",
+            "description" : "JDBC URL of the metastore database",
+            "mandatory" : false
+        },
+        {
+            "name": "metastoreJDBCDriver",
+            "label" : "Metastore JDBC Driver",
+            "visibilityCondition": "model.metastoreDBMode == 'CUSTOM_JDBC'",
+            "type": "STRING",
+            "description" : "Optional. JDBC Driver of the metastore database",
+            "defaultValue" : "org.mariadb.jdbc.Driver",
+            "mandatory" : false
+        },
+        {
+            "name": "metastoreJDBCUser",
+            "label" : "Metastore JDBC User",
+            "visibilityCondition": "model.metastoreDBMode == 'CUSTOM_JDBC'",
+            "type": "STRING",
+            "description" : "Optional. JDBC user of the metastore database",
+            "mandatory" : false
+        },
+        {
+            "name": "metastoreJDBCPassword",
+            "label" : "Metastore JDBC password",
+            "visibilityCondition": "model.metastoreDBMode == 'CUSTOM_JDBC'",
+            "type": "PASSWORD",
+            "description" : "Optional. JDBC password of the metastore database",
+            "mandatory" : false
+        },
+        {
+            "name": "databasesToCreate",
+            "label" : "Databases to create",
+            "type": "STRING",
+            "defaultValue" : "dataiku",
+            "description" : "Comma-separated list of databases to create upon startup",
+            "mandatory" : false
+        },
+        
+        {
+            "type" : "SEPARATOR",
+            "label":  "Misc"
+        },
+        {
+            "name": "tags",
+            "label": "Tags",
+            "type" : "KEY_VALUE_LIST",
+            "description" : "AWS tags to add on the cluster"
+        },
+        {
+            "name" : "logsPath",
+            "label" : "Path for logs",
+            "type" : "STRING",
+            "mandatory": false,
+            "description" : "Optional. S3 path where logs will be stored"
+        }
+    ],
+    
+    "actions" : [
+        {
+            "id" : "fetch-nodes-keys",
+            "meta" : {
+                "label" : "Fetch node description keys",
+                "description" : "Fetches node description keys",
+                "icon" : "icon-search"
+            }
+        }
+    ]
+}
