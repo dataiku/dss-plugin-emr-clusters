@@ -1,84 +1,312 @@
-/* This file is the descriptor for the custom python cluster */
 {
-    /* Meta data for display purposes */
     "meta" : {
-        "label" : "EMR cluster (create cluster)",
+        "label" : "EMR cluster (create new cluster)",
         "description" : "Creates and manages EMR clusters",
         "icon" : "icon-puzzle-piece"
     },
+    
+    "resourceKeys" : [],
 
     "params": [
+        {
+            "type" : "SEPARATOR",
+            "label":  "CLUSTER"
+        },
+        
         {
             "name" : "awsRegionId",
             "label" : "AWS Region",
             "type": "STRING", 
-            "description": "AWS region id. Leave empty to use region of current instance.",
+            "description": "AWS region id. Leave empty to use region of current instance",
             "mandatory" : false,
             "defaultValue": "us-east-1"
-        },
-        {
-            "name": "masterInstanceType",
-            "label" : "Instance type (master)",
-            "type": "STRING",
-            "description": "EC2 instance type for the master instance. Mandatory.",
-            "defaultValue" : "m4.2xlarge",
-            "mandatory" : true
-        },
-        {
-            "name": "coreInstanceType",
-            "label" : "Instance type (core)",
-            "type": "STRING",
-            "description": "Instance type for the CORE instance group (compute + storage slave nodes).",
-            "defaultValue": "m4.2xlarge",
-            "mandatory" : false
-        },
-        {
-            "name": "coreInstanceCount",
-            "type": "INT",
-            "label" : "Instance count (core)",
-            "defaultValue" : 2
-        },
-        {
-            "name": "taskInstanceType",
-            "label" : "Instance type (task)",
-            "type": "STRING",
-            "description": "Instance type for the TASK instance group (compute-only slave nodes).",
-            "defaultValue" : "m4.2xlarge",
-            "mandatory" : false
-        },
-        {
-            "name": "taskInstanceCount",
-            "type": "INT",
-            "label" : "Instance count (task)",
-            "defaultValue" : 0
         },
         {
             "name": "emrVersion",
             "label" : "EMR Version",
             "type": "STRING",
-            "defaultValue" : "5.11.1",
-            "description" : "EMR release label, e.g. 5.11.1",
+            "defaultValue" : "5.23.0",
+            "description" : "EMR release label, e.g. 5.23.0",
             "mandatory" : true
         },
         {
             "name": "ebsRootVolumeSize",
             "label" : "Root volume size",
             "type": "INT",
-            "description" : "Root device EBS volume size in GB, or 0 to use default size",
-            "defaultValue" : 0
+            "description" : "Root device EBS volume size in GB, or 0 to use default size. Must be <= 100.",
+            "defaultValue" : 25,
+            "mandatory" : true
         },
-
+        {
+            "name": "ebsOptimized",
+            "label" : "Use optimized EBS volumes",
+            "type": "BOOLEAN",
+            "description" : "Applies to all instance groups",
+            "defaultValue" : true,
+            "mandatory" : true
+        },
+        {
+            "name": "tags",
+            "label": "Tags",
+            "type" : "KEY_VALUE_LIST",
+            "description" : "AWS tags to add on the cluster"
+        },
+        {
+            "name" : "logsPath",
+            "label" : "Path for logs",
+            "type" : "STRING",
+            "mandatory": false,
+            "description" : "Set specific S3 path where logs will be stored. Optional."
+        },
+        {
+            "name": "terminationProtected",
+            "label": "Termination protection",
+            "description": "Prevents accidental cluster termination.",
+            "type": "BOOLEAN",
+            "mandatory": true,
+            "defaultValue": false
+        },
+        {
+            "name": "pythonLibs",
+            "label": "Python libs to install (Advanced)",
+            "type": "TEXTAREA",
+            "defaultValue": null,
+            "description": "Python libraries to install on each node. Use the same formatting as a pip requirements.txt file.",
+            "mandatory": false,
+            "visibilityCondition": false
+        },
+        {
+            "name": "extraSetup",
+            "label": "Extra setup commands (Advanced)",
+            "type": "TEXTAREA",
+            "defaultValue": null,
+            "description": "Shell commands (set paths or create dirs, for example) to run on each node",
+            "mandatory": false,
+            "visibilityCondition": false
+        },
+        
+        {
+            "type" : "SEPARATOR",
+            "label":  "APPLICATIONS"
+        },
+        
+        {
+            "name": "installAppHadoop",
+            "type": "BOOLEAN",
+            "label": "Hadoop",
+            "defaultValue": true,
+            "mandatory": true
+        },
+        {
+            "name": "installAppHive",
+            "type": "BOOLEAN",
+            "label": "Hive",
+            "defaultValue": true,
+            "mandatory": true
+        },
+        {
+            "name": "installAppSpark",
+            "type": "BOOLEAN",
+            "label": "Spark",
+            "defaultValue": true,
+            "mandatory": true
+        },
+        {
+            "name": "installAppTez",
+            "type": "BOOLEAN",
+            "label": "Tez",
+            "defaultValue": true,
+            "mandatory": true
+        },
+        {
+            "name": "installAppPig",
+            "type": "BOOLEAN",
+            "label": "Pig",
+            "defaultValue": true,
+            "mandatory": true
+        },
+        {
+            "name": "installAppLivy",
+            "type": "BOOLEAN",
+            "label": "Livy",
+            "defaultValue": true,
+            "mandatory": true
+        },
+        {
+            "name": "installAppZookeeper",
+            "type": "BOOLEAN",
+            "label": "ZooKeeper",
+            "defaultValue": false,
+            "mandatory": true
+        },
+        {
+            "name": "installAppGanglia",
+            "type": "BOOLEAN",
+            "label": "Ganglia",
+            "defaultValue": true,
+            "mandatory": true
+        },
+        
+        {
+            "name": "softwareConfig",
+            "label": "Software configurations",
+            "type": "TEXTAREA",
+            "description": "Specify desired software config settings as a JSON list of properties. Leave empty to use default EMR settings. For more info, see https://docs.aws.amazon.com/emr/latest/ReleaseGuide/emr-configure-apps.html.",
+            "defaultValue": null,
+            "mandatory": false
+        },
+        
+        {
+            "type" : "SEPARATOR",
+            "label":  "MASTER NODE"
+        },
+        
+        {
+            "name": "masterInstanceType",
+            "label" : "Instance type",
+            "type": "STRING",
+            "description": "EC2 instance type. Mandatory.",
+            "defaultValue" : "m5a.4xlarge",
+            "mandatory" : true
+        },
+        {
+            "name": "masterEbsSize",
+            "type": "INT",
+            "label" : "EBS storage size (GB)",
+            "description": "Storage size for each EBS volume. Must be b/w 10 and 1024.",
+            "defaultValue" : 250,
+            "mandatory": true
+        },
+        {
+            "name": "masterEbsCount",
+            "type": "INT",
+            "label" : "EBS volume count",
+            "description": "Number of EBS volumes.",
+            "defaultValue" : 4,
+            "mandatory": true
+        },
+        
+        {
+            "type" : "SEPARATOR",
+            "label":  "CORE NODES"
+        },
+        
+        {
+            "name": "coreInstanceType",
+            "label" : "Instance type",
+            "type": "STRING",
+            "description": "Instance type for the CORE instance group (compute + storage slave nodes). Mandatory.",
+            "defaultValue": "m4.4xlarge",
+            "mandatory" : true
+        },
+        {
+            "name": "coreInstanceCount",
+            "type": "INT",
+            "label" : "Instance count",
+            "description": "Number of instances (must be >= 1).",
+            "defaultValue" : 2,
+            "mandatory": true
+        },
+        {
+            "name": "coreEbsSize",
+            "type": "INT",
+            "label" : "EBS volume size (GB).",
+            "description": "EBS volume size per instance instance. Must be b/w 10 and 1024.",
+            "defaultValue" : 500,
+            "mandatory": true
+        },
+        {
+            "name": "coreEbsCount",
+            "type": "INT",
+            "label" : "EBS volume count",
+            "description": "Number of EBS volumes per instance",
+            "defaultValue" : 1,
+            "mandatory": true
+        },
+        {
+            "name": "coreUseSpotInstances",
+            "type": "BOOLEAN",
+            "label": "Use spot instances",
+            "description": "Spot instances are cheaper, but can be terminated without warning. Not recommended for CORE group.",
+            "defaultValue": false,
+            "mandatory": true
+        },
+        {
+            "name": "coreBidPrice",
+            "type": "DOUBLE",
+            "defaultValue": null,
+            "label": "Bid price (per instance)",
+            "description": "Max hourly rate (price) you are willing to pay per instance. Leave blank or set to 0 use on-demand price.",
+            "visibilityCondition": "model.coreUseSpotInstances"
+        },
+        
+        {
+            "type" : "SEPARATOR",
+            "label":  "TASK NODES"
+        },
+        
+        {
+            "name": "taskInstanceType",
+            "label" : "Instance type",
+            "type": "STRING",
+            "description": "Instance type for the TASK instance group (compute-only slave nodes).",
+            "defaultValue" : "m4.4xlarge",
+            "mandatory" : false
+        },
+        {
+            "name": "taskInstanceCount",
+            "type": "INT",
+            "label" : "Instance count",
+            "description": "Number of instances. Set to 0 if no task instances are desired.",
+            "defaultValue" : 0,
+            "mandatory" : true
+        },
+        {
+            "name": "taskEbsSize",
+            "type": "INT",
+            "label" : "EBS volume size (GB).",
+            "description": "EBS volume size per instance. Must be b/w 10 and 1024.",
+            "defaultValue" : 500,
+            "mandatory": true,
+            "visibilityCondition": "model.taskInstanceCount > 0"
+        },
+        {
+            "name": "taskEbsCount",
+            "type": "INT",
+            "label" : "EBS volume count",
+            "description": "Number of EBS volumes per instance",
+            "defaultValue" : 1,
+            "mandatory": true,
+            "visibilityCondition": "model.taskInstanceCount > 0"
+        },
+        {
+            "name": "taskUseSpotInstances",
+            "type": "BOOLEAN",
+            "defaultValue": false,
+            "label": "Use spot instances",
+            "description": "Spot instances are cheaper, but can be terminated without warning",
+            "visibilityCondition": "model.taskInstanceCount > 0"
+        },
+        {
+            "name": "taskBidPrice",
+            "type": "DOUBLE",
+            "defaultValue": null,
+            "label": "Bid price (per task instance)",
+            "description": "Max hourly rate (price) you are willing to pay per instance. Leave blank or set to 0 to use on-demand price.",
+            "visibilityCondition": "model.taskInstanceCount > 0 && model.taskUseSpotInstances"
+        },
 
         {
             "type" : "SEPARATOR",
             "label":  "Networking"
         },
+        
         {
             "name": "subnetId",
             "label" : "VPC subnet id",
-            "description": "VPC subnet in which the cluster must be deployed. Leave empty to use that of the current instance.",
+            "description": "VPC subnet (e.g., subnet-XXXXXX) in which the cluster must be deployed. Leave empty to use that of the current instance.",
             "type": "STRING",
-            "defaultValue" : "subnet-XXXXXX",
+            "defaultValue" : null,
             "mandatory" : false
         },
         {
@@ -86,6 +314,7 @@
             "label" : "Additional security groups",
             "type" : "STRING",
             "mandatory": false,
+            "defaultValue": null,
             "description" : "Optional. Comma-separated list of security groups ids to add to the nodes"
         },
 
@@ -94,11 +323,12 @@
             "type" : "SEPARATOR",
             "label":  "Security"
         },
+        
         {
             "name": "ec2KeyName",
             "label" : "Key pair name",
             "type": "STRING",
-            "description" : "Optional but recommended. SSH Keypair to add on the cluster nodes",
+            "description" : "Optional but recommended. Name of SSH keypair to add on the cluster nodes.",
             "mandatory" : false
         },
         {
@@ -106,7 +336,7 @@
             "label" : "Service role",
             "type": "STRING",
             "defaultValue": "EMR_DefaultRole",
-            "description" : "IAM role to attach to the service. Must have ability to call required AWS services to create the cluster",
+            "description" : "IAM role to attach to the service. Must have ability to call mandatory AWS services to create the cluster.",
             "mandatory" : true
         },
         {
@@ -114,7 +344,7 @@
             "label" : "Nodes role",
             "type": "STRING",
             "defaultValue": "EMR_EC2_DefaultRole",
-            "description" : "IAM role to attach to the nodes of the cluster. Needs to have ability to call required AWS services from the cluster, like S3",
+            "description" : "IAM role to attach to the nodes of the cluster. Needs to have ability to call mandatory AWS services from the cluster, like S3",
             "mandatory" : true
         },
         
@@ -122,6 +352,7 @@
             "type" : "SEPARATOR",
             "label":  "Hive Metastore"
         },
+        
         {
             "name": "metastoreDBMode",
             "label" : "Metastore database",
@@ -201,24 +432,6 @@
             "defaultValue" : "dataiku",
             "description" : "Comma-separated list of databases to create upon startup",
             "mandatory" : false
-        },
-        
-        {
-            "type" : "SEPARATOR",
-            "label":  "Misc"
-        },
-        {
-            "name": "tags",
-            "label": "Tags",
-            "type" : "KEY_VALUE_LIST",
-            "description" : "AWS tags to add on the cluster"
-        },
-        {
-            "name" : "logsPath",
-            "label" : "Path for logs",
-            "type" : "STRING",
-            "mandatory": false,
-            "description" : "Optional. S3 path where logs will be stored"
         }
     ],
     
