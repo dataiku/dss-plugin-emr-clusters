@@ -1,6 +1,4 @@
 import paramiko
-import dataiku
-import subprocess
 import boto3
 import tempfile
 import time
@@ -73,6 +71,7 @@ class RemoteSSHClient(object):
             
         runner = runner or self.client
         _, stdout, stderr = runner.exec_command(formatted_cmds)
+        # time.sleep(1)
         cmd_run_info = {
             'cmds': formatted_cmds,
             'stdout': stdout, 
