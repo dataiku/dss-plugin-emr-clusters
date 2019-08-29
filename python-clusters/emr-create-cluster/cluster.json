@@ -61,7 +61,7 @@
         {
             "name": "terminationProtected",
             "label": "Termination protection",
-            "description": "Prevents accidental cluster termination.",
+            "description": "Prevents accidental cluster termination from AWS console. Automatically turned off when request to stop/detach is made.",
             "type": "BOOLEAN",
             "mandatory": true,
             "defaultValue": false
