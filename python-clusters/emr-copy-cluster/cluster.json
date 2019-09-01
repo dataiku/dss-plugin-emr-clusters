@@ -1,0 +1,46 @@
+{
+    "meta": {
+        "label": "EMR cluster (copy of existing cluster)",
+        "description": "Create a new cluster whose settings will be copied from an existing cluster. Limited to clusters created by DSS, i.e., excludes attached clusters created externally.",
+        "icon": "icon-cloud"
+    },
+
+    "impersonate": false,
+
+    "permissions": [],
+
+    "resultType": "HTML",
+
+    "macroRoles": [
+        {"type":"CLUSTER", "targetParamsKey": "dss_cluster_id", "limitToSamePlugin": true}
+    ],
+
+    "params": [
+        {
+            "name": "source_dss_cluster_id",
+            "label": "Source DSS Cluster id",
+            "type": "CLUSTER",
+            "description": "Identifier of the DSS cluster from which to create a copy",
+            "mandatory": true
+        },
+        {
+            "name": "excluded_cluster_types",
+            "label": "Cluster types that can NOT be copied",
+            "type": "STRING",
+            "description": "These types of clusters cannot be copied/duplicated",
+            "defaultValue": "pycluster_emr-clusters_emr-attach-to-existing-cluster",
+            "visibilityCondition": false
+        }
+    ],
+    
+    "actions" : [
+        {
+            "id" : "fetch-nodes-keys",
+            "meta" : {
+                "label" : "Fetch node description keys",
+                "description" : "Fetches node description keys",
+                "icon" : "icon-search"
+            }
+        }
+    ]
+}

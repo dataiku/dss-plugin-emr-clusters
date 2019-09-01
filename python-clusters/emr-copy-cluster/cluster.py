@@ -1,6 +1,8 @@
+import os
 import logging
 from dataiku.cluster import Cluster
-from cluster_ops import ClusterAttacher, ClusterStopper
+
+from cluster_ops import ClusterCopier, ClusterStopper
 
 # This actually belongs in the main entry point
 logging.basicConfig(format='%(asctime)s [%(levelname)s] %(message)s', level=logging.INFO)
@@ -14,12 +16,14 @@ class MyCluster(Cluster):
         self.cluster_name = cluster_name
         self.config = config
         self.plugin_config = plugin_config
-
+        self.resource_dir = os.getenv('DKU_CUSTOM_RESOURCE_FOLDER')
+        self.excluded_cluster_types = [x.strip() for x in self.config.get('excluded_cluster_types').split(",")]
+        self.source_cluster_id = self.config.get('source_dss_cluster_id')
+        self.source_cluster_name = self.source_cluster_id
+        
     def start(self):
-        return ClusterAttacher(my_cluster=self).attach_cluster()
+        return ClusterCopier(self).copy_cluster()
 
     def stop(self, data):
-        """
-        Since we attached to an existing cluster, we don't stop it
-        """
-        return ClusterStopper(my_cluster=self).detach_cluster(data)
+        return ClusterStopper(self).terminate_cluster(data)
+    
