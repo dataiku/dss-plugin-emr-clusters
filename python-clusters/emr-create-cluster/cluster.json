@@ -130,9 +130,7 @@
             "selectChoices" : [
                 {"value" : "TRANSIENT", "label" : "Transient (cluster-specific)"},
                 {"value" : "MYSQL", "label" : "External MySQL or Aurora DB"},
-                {"value" : "CUSTOM_JDBC", "label" : "Custom settings (JDBC)"}
-            ],
-            "disabledSelectChoices" : [
+                {"value" : "CUSTOM_JDBC", "label" : "Custom settings (JDBC)"},
                 {"value": "AWS_GLUE_DATA_CATALOG", "label" : "Use AWS Glue Data Catalog"}
             ],
             "mandatory" : true
