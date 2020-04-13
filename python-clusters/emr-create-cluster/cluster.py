@@ -96,7 +96,7 @@ class MyCluster(Cluster):
             props = {
                 "hive.metastore.client.factory.class": "com.amazonaws.glue.catalog.metastore.AWSGlueDataCatalogHiveClientFactory"
             }
-            Configurations = [{"Classification": "hive-site", "Properties" : props}]
+            Configurations = [{"Classification": "hive-site", "Properties" : props}, {"Classification": "spark-hive-site", "Properties": props}]
             extraArgs["Configurations"] = Configurations
         
         logging.info("Starting cluster: %s", dict(
