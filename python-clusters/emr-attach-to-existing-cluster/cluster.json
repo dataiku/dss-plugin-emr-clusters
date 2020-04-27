@@ -20,33 +20,30 @@
             "mandatory": true
         },
         {
-            "name": "useCrossAccount",
-            "label": "Using Multiple AWS Accounts",
-            "type": "BOOLEAN"
-        },
-        {
             "name": "useRole",
             "label": "Assume Role",
-            "type": "BOOLEAN",
-            "visibilityCondition": "model.useCrossAccount"
+            "type": "BOOLEAN"
         },
         {
             "name": "accessKey",
             "label": "AWS Access Key",
+            "description": "If empty, uses AWS credentials from the environment (IAM role, ~/.aws/credentials or AWS_ACCESS_KEY_ID environment variable)",
             "type": "STRING",
-            "visibilityCondition": "model.useCrossAccount && !model.useRole"
+            "visibilityCondition": "!model.useRole"
         },
         {
             "name": "secretKey",
             "label": "AWS Secret Key",
+            "description": "If empty, uses AWS credentials from the environment (IAM role, ~/.aws/credentials or AWS_ACCESS_KEY_ID environment variable)",
             "type": "STRING",
-            "visibilityCondition": "model.useCrossAccount && !model.useRole"
+            "visibilityCondition": "!model.useRole"
         },
         {
             "name": "assumeRole",
             "label": "Role ARN",
+            "description": "If empty, uses AWS credentials from the environment (IAM role, ~/.aws/credentials or AWS_ACCESS_KEY_ID environment variable)",
             "type": "STRING",
-            "visibilityCondition": "model.useCrossAccount && model.useRole"
+            "visibilityCondition": "model.useRole"
         }
     ],
     "actions": [
