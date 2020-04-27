@@ -1,6 +1,7 @@
 import boto3
 import dku_emr
 import os, json, argparse, logging
+import requests
 from dataiku.cluster import Cluster
 
 # This actually belongs in the main entry point
@@ -96,14 +97,17 @@ class MyCluster(Cluster):
             Configurations = [{"Classification": "hive-site", "Properties" : props}]
             extraArgs["Configurations"] = Configurations
         elif self.config["metastoreDBMode"] == "AWS_GLUE_DATA_CATALOG":
+            account_id = requests.get("http://169.254.169.254/latest/dynamic/instance-identity/document").json()["accountId"]
+
             hive_props = {
+                "hive.metastore.client.factory.class": "com.amazonaws.glue.catalog.metastore.AWSGlueDataCatalogHiveClientFactory",
+                "hive.metastore.glue.catalogid": account_id
+            }
+            spark_props = {
                 "hive.metastore.client.factory.class": "com.amazonaws.glue.catalog.metastore.AWSGlueDataCatalogHiveClientFactory"
             }
-            spark_props = hive_props.copy()
+
             Configurations = [{"Classification": "hive-site", "Properties" : hive_props}, {"Classification": "spark-hive-site", "Properties": spark_props}]
-            
-            if self.config["useCrossAccount"]:
-                Configurations[0]["Properties"]["hive.metastore.glue.catalogid"] = self.config["crossAccountId"]
                 
             extraArgs["Configurations"] = Configurations
         
