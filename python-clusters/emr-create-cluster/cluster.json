@@ -10,46 +10,6 @@
     "params": [
         {
             "type" : "SEPARATOR",
-            "label":  "Cross-Account Configuration"
-        },
-        {
-            "name": "useCrossAccount",
-            "label": "Using Multiple AWS Accounts",
-            "type": "BOOLEAN"
-        },
-        {
-            "name": "useRole",
-            "label": "Assume Role",
-            "type": "BOOLEAN",
-            "visibilityCondition": "model.useCrossAccount"
-        },
-        {
-            "name": "accessKey",
-            "label": "AWS Access Key",
-            "type": "STRING",
-            "visibilityCondition": "model.useCrossAccount && !model.useRole"
-        },
-        {
-            "name": "secretKey",
-            "label": "AWS Secret Key",
-            "type": "STRING",
-            "visibilityCondition": "model.useCrossAccount && !model.useRole"
-        },
-        {
-            "name": "assumeRole",
-            "label" : "Role ARN",
-            "type": "STRING",
-            "visibilityCondition": "model.useRole && model.useCrossAccount"
-        },
-        {
-            "name": "securityConfig",
-            "label": "EMR Security Configuration",
-            "type": "STRING",
-            "description": "[REQUIRED] EMR Security Configuration to use",
-            "visibilityCondition": "model.useCrossAccount"
-        },
-        {
-            "type" : "SEPARATOR",
             "label":  "Instance Configuration"
         },
         {
@@ -245,14 +205,6 @@
             "mandatory" : false
         },
         {
-            "name": "crossAccountId",
-            "label" : "AWS Account ID",
-            "type": "STRING",
-            "description" : "AWS Account ID where Glue Metastore resides",
-            "visibilityCondition": "model.metastoreDBMode == 'AWS_GLUE_DATA_CATALOG' && model.useCrossAccount"
-        },
-        
-        {
             "type" : "SEPARATOR",
             "label":  "Misc"
         },
@@ -268,6 +220,42 @@
             "type" : "STRING",
             "mandatory": false,
             "description" : "Optional. S3 path where logs will be stored"
+        },
+        {
+            "type": "SEPARATOR",
+            "label": "Advanced"
+        },
+        {
+            "name": "useRole",
+            "label": "Assume Role",
+            "type": "BOOLEAN"
+        },
+        {
+            "name": "assumeRole",
+            "label" : "Role ARN",
+            "description": "If empty, uses AWS credentials from the environment (IAM role, ~/.aws/credentials or AWS_ACCESS_KEY_ID environment variable)",
+            "type": "STRING",
+            "visibilityCondition": "model.useRole"
+        },
+        {
+            "name": "accessKey",
+            "label": "AWS Access Key",
+            "description": "If empty, uses AWS credentials from the environment (IAM role, ~/.aws/credentials or AWS_ACCESS_KEY_ID environment variable)",
+            "type": "STRING",
+            "visibilityCondition": "!model.useRole"
+        },
+        {
+            "name": "secretKey",
+            "label": "AWS Secret Key",
+            "description": "If empty, uses AWS credentials from the environment (IAM role, ~/.aws/credentials or AWS_ACCESS_KEY_ID environment variable)",
+            "type": "STRING",
+            "visibilityCondition": "!model.useRole"
+        },
+        {
+            "name": "securityConfig",
+            "label": "EMR Security Configuration",
+            "type": "STRING",
+            "description": "EMR Security Configuration to use, must already exist"
         }
     ],
     
