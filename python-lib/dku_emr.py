@@ -158,26 +158,25 @@ def get_current_subnet():
 def get_emr_client(config, region):
     """Returns a boto3 EMR client object"""
 
-    cross = config.get("useCrossAccount")
     role = config.get("assumeRole")
-    if cross:
-        if role:
-            sts = boto3.client("sts")
-            try:
-                response = sts.assume_role(RoleArn=role, RoleSessionName="dss-emr-access")
-            except:
-                logging.error("could not assume role %s" % role)
-                traceback.print_exc()
-                raise
-                
-            access_key = response["Credentials"]["AccessKeyId"]
-            secret_key = response["Credentials"]["SecretAccessKey"]
-            session_token = response["Credentials"]["SessionToken"]
-            
-            return boto3.client("emr", region_name=region, aws_access_key_id=access_key, aws_secret_access_key=secret_key, aws_session_token=session_token)
-        else:
-            access_key = config.get("accessKey")
-            secret_key = config.get("secretKey")
+    access_key = config.get("accessKey")
+    secret_key = config.get("secretKey")
 
-            return boto3.client("emr", region_name=region, aws_access_key_id=access_key, aws_secret_access_key=secret_key)
-    return boto3.client('emr', region_name=region)
+    if role:
+        sts = boto3.client("sts")
+        try:
+            response = sts.assume_role(RoleArn=role, RoleSessionName="dss-emr-access")
+        except:
+            logging.error("could not assume role %s" % role)
+            traceback.print_exc()
+            raise
+            
+        access_key = response["Credentials"]["AccessKeyId"]
+        secret_key = response["Credentials"]["SecretAccessKey"]
+        session_token = response["Credentials"]["SessionToken"]
+        
+        return boto3.client("emr", region_name=region, aws_access_key_id=access_key, aws_secret_access_key=secret_key, aws_session_token=session_token)
+    elif access_key and secret_key:
+        return boto3.client("emr", region_name=region, aws_access_key_id=access_key, aws_secret_access_key=secret_key)
+    else:
+        return boto3.client('emr', region_name=region)
