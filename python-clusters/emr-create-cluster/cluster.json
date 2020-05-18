@@ -9,6 +9,10 @@
 
     "params": [
         {
+            "type" : "SEPARATOR",
+            "label":  "Instance Configuration"
+        },
+        {
             "name" : "awsRegionId",
             "label" : "AWS Region",
             "type": "STRING", 
@@ -130,9 +134,7 @@
             "selectChoices" : [
                 {"value" : "TRANSIENT", "label" : "Transient (cluster-specific)"},
                 {"value" : "MYSQL", "label" : "External MySQL or Aurora DB"},
-                {"value" : "CUSTOM_JDBC", "label" : "Custom settings (JDBC)"}
-            ],
-            "disabledSelectChoices" : [
+                {"value" : "CUSTOM_JDBC", "label" : "Custom settings (JDBC)"},
                 {"value": "AWS_GLUE_DATA_CATALOG", "label" : "Use AWS Glue Data Catalog"}
             ],
             "mandatory" : true
@@ -202,7 +204,6 @@
             "description" : "Comma-separated list of databases to create upon startup",
             "mandatory" : false
         },
-        
         {
             "type" : "SEPARATOR",
             "label":  "Misc"
@@ -219,6 +220,42 @@
             "type" : "STRING",
             "mandatory": false,
             "description" : "Optional. S3 path where logs will be stored"
+        },
+        {
+            "type": "SEPARATOR",
+            "label": "Advanced"
+        },
+        {
+            "name": "useRole",
+            "label": "Assume Role",
+            "type": "BOOLEAN"
+        },
+        {
+            "name": "assumeRole",
+            "label" : "Role ARN",
+            "description": "If empty, uses AWS credentials from the environment (IAM role, ~/.aws/credentials or AWS_ACCESS_KEY_ID environment variable)",
+            "type": "STRING",
+            "visibilityCondition": "model.useRole"
+        },
+        {
+            "name": "accessKey",
+            "label": "AWS Access Key",
+            "description": "If empty, uses AWS credentials from the environment (IAM role, ~/.aws/credentials or AWS_ACCESS_KEY_ID environment variable)",
+            "type": "STRING",
+            "visibilityCondition": "!model.useRole"
+        },
+        {
+            "name": "secretKey",
+            "label": "AWS Secret Key",
+            "description": "If empty, uses AWS credentials from the environment (IAM role, ~/.aws/credentials or AWS_ACCESS_KEY_ID environment variable)",
+            "type": "STRING",
+            "visibilityCondition": "!model.useRole"
+        },
+        {
+            "name": "securityConfig",
+            "label": "EMR Security Configuration",
+            "type": "STRING",
+            "description": "EMR Security Configuration to use, must already exist"
         }
     ],
     

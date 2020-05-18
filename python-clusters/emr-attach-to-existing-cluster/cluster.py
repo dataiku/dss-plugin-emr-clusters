@@ -16,7 +16,7 @@ class MyCluster(Cluster):
        
     def start(self):
         region_name = self.config.get("awsRegionId") or dku_emr.get_current_region()
-        client = boto3.client("emr", region_name=region_name)
+        client = dku_emr.get_emr_client(self.config, region_name)
         clusterId = self.config["emrClusterId"]
         logging.info("Attaching to EMR cluster id %s" % clusterId)
         return dku_emr.make_cluster_keys_and_data(client, clusterId, create_user_dir=True)

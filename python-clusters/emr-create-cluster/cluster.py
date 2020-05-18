@@ -1,6 +1,7 @@
 import boto3
 import dku_emr
 import os, json, argparse, logging
+import requests
 from dataiku.cluster import Cluster
 
 # This actually belongs in the main entry point
@@ -16,7 +17,7 @@ class MyCluster(Cluster):
         
     def start(self):
         region = self.config.get("awsRegionId") or dku_emr.get_current_region()
-        client = boto3.client('emr', region_name=region)
+        client = dku_emr.get_emr_client(self.config, region)
         release = 'emr-%s' % self.config["emrVersion"]
 
         name = "DSS cluster id=%s name=%s" % (self.cluster_id, self.cluster_name)
@@ -67,6 +68,9 @@ class MyCluster(Cluster):
                 'InstanceCount': self.config["taskInstanceCount"]
             })
 
+        if self.config.get("securityConfig"):
+            extraArgs["SecurityConfiguration"] = self.config.get("securityConfig")
+
         if "ec2KeyName" in self.config:
             instances['Ec2KeyName'] = self.config["ec2KeyName"]
 
@@ -93,10 +97,18 @@ class MyCluster(Cluster):
             Configurations = [{"Classification": "hive-site", "Properties" : props}]
             extraArgs["Configurations"] = Configurations
         elif self.config["metastoreDBMode"] == "AWS_GLUE_DATA_CATALOG":
-            props = {
+            account_id = requests.get("http://169.254.169.254/latest/dynamic/instance-identity/document").json()["accountId"]
+
+            hive_props = {
+                "hive.metastore.client.factory.class": "com.amazonaws.glue.catalog.metastore.AWSGlueDataCatalogHiveClientFactory",
+                "hive.metastore.glue.catalogid": account_id
+            }
+            spark_props = {
                 "hive.metastore.client.factory.class": "com.amazonaws.glue.catalog.metastore.AWSGlueDataCatalogHiveClientFactory"
             }
-            Configurations = [{"Classification": "hive-site", "Properties" : props}]
+
+            Configurations = [{"Classification": "hive-site", "Properties" : hive_props}, {"Classification": "spark-hive-site", "Properties": spark_props}]
+                
             extraArgs["Configurations"] = Configurations
         
         logging.info("Starting cluster: %s", dict(
@@ -154,5 +166,5 @@ class MyCluster(Cluster):
         emrClusterId = data["emrClusterId"]
 
         region = self.config.get("awsRegionId") or dku_emr.get_current_region()
-        client = boto3.client('emr', region_name=region)
+        client = dku_emr.get_emr_client(self.config, region)
         client.terminate_job_flows(JobFlowIds=[emrClusterId])

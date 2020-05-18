@@ -23,7 +23,7 @@ def get_client_and_wait(started_cluster_settings):
 
     region = config.get("awsRegionId") or get_current_region()
     logging.info("creating Boto client for cluster, region=%s", region)
-    client = boto3.client('emr', region_name=region)
+    client = get_emr_client(config, region)
 
     logging.info("waiting for cluster %s to be running" % data["emrClusterId"])
     waiter = client.get_waiter('cluster_running')
@@ -153,3 +153,30 @@ def get_current_subnet():
         logging.error("could not retrieve current EC2 subnet")
         traceback.print_exc()
         return None
+
+
+def get_emr_client(config, region):
+    """Returns a boto3 EMR client object"""
+
+    role = config.get("assumeRole")
+    access_key = config.get("accessKey")
+    secret_key = config.get("secretKey")
+
+    if role:
+        sts = boto3.client("sts")
+        try:
+            response = sts.assume_role(RoleArn=role, RoleSessionName="dss-emr-access")
+        except:
+            logging.error("could not assume role %s" % role)
+            traceback.print_exc()
+            raise
+            
+        access_key = response["Credentials"]["AccessKeyId"]
+        secret_key = response["Credentials"]["SecretAccessKey"]
+        session_token = response["Credentials"]["SessionToken"]
+        
+        return boto3.client("emr", region_name=region, aws_access_key_id=access_key, aws_secret_access_key=secret_key, aws_session_token=session_token)
+    elif access_key and secret_key:
+        return boto3.client("emr", region_name=region, aws_access_key_id=access_key, aws_secret_access_key=secret_key)
+    else:
+        return boto3.client('emr', region_name=region)

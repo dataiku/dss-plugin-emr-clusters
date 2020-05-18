@@ -1,34 +1,58 @@
 {
-    "meta" : {
-        "label" : "EMR cluster (attach to existing cluster)",
-        "description" : "Creates a DSS cluster to attach to an existing EMR cluster",
-        "icon" : "icon-puzzle-piece"
+    "meta": {
+        "label": "EMR cluster (attach to existing cluster)",
+        "description": "Creates a DSS cluster to attach to an existing EMR cluster",
+        "icon": "icon-puzzle-piece"
     },
-
     "params": [
         {
-            "name" : "awsRegionId",
-            "label" : "AWS Region",
-            "type": "STRING", 
+            "name": "awsRegionId",
+            "label": "AWS Region",
+            "type": "STRING",
             "description": "AWS region id, leave empty to use region of current instance",
-            "mandatory" : false,
+            "mandatory": false,
             "defaultValue": "us-east-1"
         },
         {
             "name": "emrClusterId",
-            "label" : "EMR cluster Id",
+            "label": "EMR cluster Id",
             "type": "STRING",
-            "mandatory" : true
+            "mandatory": true
+        },
+        {
+            "name": "useRole",
+            "label": "Assume Role",
+            "type": "BOOLEAN"
+        },
+        {
+            "name": "accessKey",
+            "label": "AWS Access Key",
+            "description": "If empty, uses AWS credentials from the environment (IAM role, ~/.aws/credentials or AWS_ACCESS_KEY_ID environment variable)",
+            "type": "STRING",
+            "visibilityCondition": "!model.useRole"
+        },
+        {
+            "name": "secretKey",
+            "label": "AWS Secret Key",
+            "description": "If empty, uses AWS credentials from the environment (IAM role, ~/.aws/credentials or AWS_ACCESS_KEY_ID environment variable)",
+            "type": "STRING",
+            "visibilityCondition": "!model.useRole"
+        },
+        {
+            "name": "assumeRole",
+            "label": "Role ARN",
+            "description": "If empty, uses AWS credentials from the environment (IAM role, ~/.aws/credentials or AWS_ACCESS_KEY_ID environment variable)",
+            "type": "STRING",
+            "visibilityCondition": "model.useRole"
         }
     ],
-    
-    "actions" : [
+    "actions": [
         {
-            "id" : "fetch-nodes-keys",
-            "meta" : {
-                "label" : "Fetch node description keys",
-                "description" : "Fetches node description keys",
-                "icon" : "icon-search"
+            "id": "fetch-nodes-keys",
+            "meta": {
+                "label": "Fetch node description keys",
+                "description": "Fetches node description keys",
+                "icon": "icon-search"
             }
         }
     ]
