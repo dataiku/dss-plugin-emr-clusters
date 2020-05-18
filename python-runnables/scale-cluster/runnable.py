@@ -49,7 +49,7 @@ class MyRunnable(Runnable):
         if core_group and core_group["RequestedInstanceCount"] != self.config.get("core_group_target_instances", 0):
             instanceGroupsToModify.append({
                     "InstanceGroupId" : core_group["Id"],
-                    "InstanceCount" : self.config.get("core_group_target_instances", 0)
+                    "InstanceCount" : int(self.config.get("core_group_target_instances", 0))
                 })
         elif not core_group and self.config.get("core_group_target_instances"):
             if not clusterConfig.get("coreInstanceType"):
@@ -57,13 +57,13 @@ class MyRunnable(Runnable):
             instanceGroupsToAdd.append({
                     'InstanceRole': 'CORE',
                     'InstanceType': clusterConfig["coreInstanceType"],
-                    'InstanceCount': self.config["core_group_target_instances"]
+                    'InstanceCount': int(self.config["core_group_target_instances"])
                 })
 
         if task_group and task_group["RequestedInstanceCount"] != self.config.get("task_group_target_instances", 0):
             instanceGroupsToModify.append({
                     "InstanceGroupId" : task_group["Id"],
-                    "InstanceCount" : self.config.get("task_group_target_instances", 0)
+                    "InstanceCount" : int(self.config.get("task_group_target_instances", 0))
                 })
         elif not task_group and self.config.get("task_group_target_instances"):
             if not clusterConfig.get("taskInstanceType"):
@@ -71,7 +71,7 @@ class MyRunnable(Runnable):
             instanceGroupsToAdd.append({
                     'InstanceRole': 'TASK',
                     'InstanceType': clusterConfig["taskInstanceType"],
-                    'InstanceCount': self.config["task_group_target_instances"]
+                    'InstanceCount': int(self.config["task_group_target_instances"])
                 })
 
         if instanceGroupsToAdd:

@@ -30,7 +30,7 @@ class MyCluster(Cluster):
         if "securityConfiguration" in self.config:
             extraArgs["SecurityConfiguration"] = self.config["securityConfiguration"]
         if self.config.get("ebsRootVolumeSize", 0):
-            extraArgs["EbsRootVolumeSize"] = self.config["ebsRootVolumeSize"]
+            extraArgs["EbsRootVolumeSize"] = int(self.config["ebsRootVolumeSize"])
         
         security_groups = []
         if "additionalSecurityGroups" in self.config:
@@ -56,7 +56,7 @@ class MyCluster(Cluster):
             instances['InstanceGroups'].append({
                 'InstanceRole': 'CORE',
                 'InstanceType': self.config["coreInstanceType"],
-                'InstanceCount': self.config["coreInstanceCount"]
+                'InstanceCount': int(self.config["coreInstanceCount"])
             })
 
         if self.config.get("taskInstanceCount"):
@@ -65,7 +65,7 @@ class MyCluster(Cluster):
             instances['InstanceGroups'].append({
                 'InstanceRole': 'TASK',
                 'InstanceType': self.config["taskInstanceType"],
-                'InstanceCount': self.config["taskInstanceCount"]
+                'InstanceCount': int(self.config["taskInstanceCount"])
             })
 
         if self.config.get("securityConfig"):
