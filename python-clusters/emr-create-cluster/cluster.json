@@ -43,6 +43,19 @@
             "defaultValue" : 2
         },
         {
+            "name": "enableCoreAutoScaling",
+            "type": "BOOLEAN",
+            "label": "Enable Core Node Autoscaling",
+            "defaultValue": false
+        },
+        {
+            "name": "coreNodeAutoScalingPolicy",
+            "type": "TEXTAREA",
+            "label": "Core Node Autoscaling Policy",
+            "description": "Use JSON format, see here: https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-automatic-scaling.html",
+            "visibilityCondition": "model.enableCoreAutoScaling"
+        },
+        {
             "name": "taskInstanceType",
             "label" : "Instance type (task)",
             "type": "STRING",
@@ -55,6 +68,12 @@
             "type": "INT",
             "label" : "Instance count (task)",
             "defaultValue" : 0
+        },
+        {
+            "name": "enableTaskAutoScaling",
+            "type": "BOOLEAN",
+            "label": "Enable Task Node Autoscaling",
+            "defaultValue": false
         },
         {
             "name": "emrVersion",
