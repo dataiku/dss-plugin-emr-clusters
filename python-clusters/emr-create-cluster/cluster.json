@@ -76,6 +76,13 @@
             "defaultValue": false
         },
         {
+            "name": "taskNodeAutoScalingPolicy",
+            "type": "TEXTAREA",
+            "label": "Task Node Autoscaling Policy",
+            "description": "Use JSON format, see here: https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-automatic-scaling.html",
+            "visibilityCondition": "model.enableTaskAutoScaling"
+        },
+        {
             "name": "emrVersion",
             "label" : "EMR Version",
             "type": "STRING",
