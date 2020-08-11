@@ -150,6 +150,7 @@ class MyCluster(Cluster):
             VisibleToAllUsers=True,
             JobFlowRole=self.config["nodesRole"],
             ServiceRole=self.config["serviceRole"],
+            AutoScalingRole=self.config["autoScalingRole"]
             Tags=tags,
             **extraArgs
          )
