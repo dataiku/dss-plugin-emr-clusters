@@ -146,7 +146,7 @@
             "type": "STRING",
             "description": "IAM role with permissions to add and terminate instances when scaling activities are triggered",
             "defaultValue": "EMR_AutoScaling_DefaultRole"
-        }
+        },
         {
             "type" : "SEPARATOR",
             "label":  "Hive Metastore"
