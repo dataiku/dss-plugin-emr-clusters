@@ -53,11 +53,16 @@ class MyCluster(Cluster):
         if self.config.get("coreInstanceCount"):
             if not self.config.get("coreInstanceType"):
                 raise Exception("Missing core instance type")
-            instances['InstanceGroups'].append({
+            instance_group = {
                 'InstanceRole': 'CORE',
                 'InstanceType': self.config["coreInstanceType"],
                 'InstanceCount': int(self.config["coreInstanceCount"])
-            })
+            }
+            
+            if self.config.get("enableCoreAutoScaling"):
+                instance_group["AutoScalingPolicy"] = json.loads(self.config.get("coreNodeAutoScalingPolicy"))
+                
+            instances['InstanceGroups'].append(instance_group)
 
         if self.config.get("taskInstanceCount"):
             if not self.config.get("taskInstanceType"):
