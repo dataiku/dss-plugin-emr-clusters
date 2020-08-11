@@ -67,11 +67,16 @@ class MyCluster(Cluster):
         if self.config.get("taskInstanceCount"):
             if not self.config.get("taskInstanceType"):
                 raise Exception("Missing task instance type")
-            instances['InstanceGroups'].append({
+            instance_group = {
                 'InstanceRole': 'TASK',
                 'InstanceType': self.config["taskInstanceType"],
                 'InstanceCount': int(self.config["taskInstanceCount"])
-            })
+            }
+            
+            if self.config.get("enableTaskAutoScaling"):
+                instance_group["AutoScalingPolicy"] = json.loads(self.config.get("taskNodeAutoScalingPolicy"))
+
+            instances['InstanceGroups'].append(instance_group)
 
         if self.config.get("securityConfig"):
             extraArgs["SecurityConfiguration"] = self.config.get("securityConfig")
