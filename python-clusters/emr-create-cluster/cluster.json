@@ -140,7 +140,13 @@
             "description" : "IAM role to attach to the nodes of the cluster. Needs to have ability to call required AWS services from the cluster, like S3",
             "mandatory" : true
         },
-        
+        {
+            "name": "autoScalingRole",
+            "label": "Autoscaling Role",
+            "type": "STRING",
+            "description": "IAM role with permissions to add and terminate instances when scaling activities are triggered",
+            "defaultValue": "EMR_AutoScaling_DefaultRole"
+        }
         {
             "type" : "SEPARATOR",
             "label":  "Hive Metastore"
