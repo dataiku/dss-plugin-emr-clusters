@@ -281,7 +281,7 @@
             "name": "secretKey",
             "label": "AWS Secret Key",
             "description": "If empty, uses AWS credentials from the environment (IAM role, ~/.aws/credentials or AWS_ACCESS_KEY_ID environment variable)",
-            "type": "STRING",
+            "type": "PASSWORD",
             "visibilityCondition": "!model.useRole"
         },
         {
