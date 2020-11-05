@@ -32,7 +32,22 @@ class MyCluster(Cluster):
         if self.config.get("ebsRootVolumeSize", 0):
             extraArgs["EbsRootVolumeSize"] = int(self.config["ebsRootVolumeSize"])
         if "bootstrapActions" in self.config:
-            print(self.config["bootstrapActions"])
+            extraArgs["BootstrapActions"] = []
+            
+            for idx, ba in enumerate(self.config["bootstrapActions"]):
+                if len(ba["to"]) > 0:
+                    args = ba["to"].split(",")
+                else:
+                    args = []
+                config = {
+                    "Name": "action_{}".format(idx),
+                    "ScriptBootstrapAction": {
+                        "Path": ba["from"]
+                        "Args": args
+                    }
+                }
+                extraArgs["BootstrapActions"].append(config)
+            print(extraArgs["BootstrapActions"])
             raise ValueError
         
         security_groups = []
