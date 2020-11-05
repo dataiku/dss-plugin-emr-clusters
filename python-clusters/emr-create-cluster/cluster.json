@@ -289,6 +289,12 @@
             "label": "EMR Security Configuration",
             "type": "STRING",
             "description": "EMR Security Configuration to use, must already exist"
+        },
+        {
+            "name": "bootstrapActions",
+            "label": "EMR Bootstrap Actions",
+            "type": "KEY_VALUE_LIST",
+            "description": "EMR Bootstrap Actions"
         }
     ],
     
