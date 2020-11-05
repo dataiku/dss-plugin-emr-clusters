@@ -47,8 +47,6 @@ class MyCluster(Cluster):
                     }
                 }
                 extraArgs["BootstrapActions"].append(config)
-            print(extraArgs["BootstrapActions"])
-            raise ValueError
         
         security_groups = []
         if "additionalSecurityGroups" in self.config:
