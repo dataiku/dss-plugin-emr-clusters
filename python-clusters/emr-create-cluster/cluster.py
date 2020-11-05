@@ -42,7 +42,7 @@ class MyCluster(Cluster):
                 config = {
                     "Name": "action_{}".format(idx),
                     "ScriptBootstrapAction": {
-                        "Path": ba["from"]
+                        "Path": ba["from"],
                         "Args": args
                     }
                 }
