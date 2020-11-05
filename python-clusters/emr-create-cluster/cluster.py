@@ -31,6 +31,9 @@ class MyCluster(Cluster):
             extraArgs["SecurityConfiguration"] = self.config["securityConfiguration"]
         if self.config.get("ebsRootVolumeSize", 0):
             extraArgs["EbsRootVolumeSize"] = int(self.config["ebsRootVolumeSize"])
+        if "bootstrapActions" in self.config:
+            print(self.config["bootstrapActions"])
+            raise ValueError
         
         security_groups = []
         if "additionalSecurityGroups" in self.config:
