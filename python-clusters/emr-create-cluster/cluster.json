@@ -294,7 +294,7 @@
             "name": "bootstrapActions",
             "label": "EMR Bootstrap Actions",
             "type": "KEY_VALUE_LIST",
-            "description": "EMR Bootstrap Actions - key should be S3 path (s3://path/to/file) and value should be comma separated list of args: arg1,arg2,arg3"
+            "description": "Key should be S3 path (s3://path/to/file) and value should be comma separated list of args: arg1,arg2,arg3"
         }
     ],
     
