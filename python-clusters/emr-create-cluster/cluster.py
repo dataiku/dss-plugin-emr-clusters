@@ -153,9 +153,12 @@ class MyCluster(Cluster):
         logging.info("clusterId=%s" % clusterId)
         
         logging.info("waiting for cluster to start")
-        client.get_waiter('cluster_running').wait(ClusterId=clusterId)
-        
-        return dku_emr.make_cluster_keys_and_data(client, clusterId, create_user_dir=True, create_databases=self.config.get("databasesToCreate"))
+        try:
+            client.get_waiter('cluster_running').wait(ClusterId=clusterId)
+            return dku_emr.make_cluster_keys_and_data(client, clusterId, create_user_dir=True, create_databases=self.config.get("databasesToCreate"))
+        except:
+            client.terminate_job_flows(JobFlowIds=[clusterId])
+            raise
 
     def stop(self, data):
         """
