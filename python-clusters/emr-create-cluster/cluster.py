@@ -79,7 +79,7 @@ class MyCluster(Cluster):
                 core_node_policy = json.loads(self.config.get("coreNodeAutoScalingPolicy"))
                 
                 for rule in core_node_policy["Rules"]:
-                    rule["Trigger"]["CloudWatchAlarmDefinition"]["Dimensions"] = [{"Key": "JobFlowId", "Value": "${scale}"}]
+                    rule["Trigger"]["CloudWatchAlarmDefinition"]["Dimensions"] = [{"Key": "JobFlowId", "Value": "${emr.clusterId}"}]
                 instance_group["AutoScalingPolicy"] = core_node_policy
                 
             instances['InstanceGroups'].append(instance_group)
@@ -97,7 +97,7 @@ class MyCluster(Cluster):
                 task_node_policy = json.loads(self.config.get("taskNodeAutoScalingPolicy"))
                 
                 for rule in task_node_policy["Rules"]:
-                    rule["Trigger"]["CloudWatchAlarmDefinition"]["Dimensions"] = [{"Key": "JobFlowId", "Value": "${scale}"}]
+                    rule["Trigger"]["CloudWatchAlarmDefinition"]["Dimensions"] = [{"Key": "JobFlowId", "Value": "${emr.clusterId}"}]
                 instance_group["AutoScalingPolicy"] = task_node_policy
 
             instances['InstanceGroups'].append(instance_group)
