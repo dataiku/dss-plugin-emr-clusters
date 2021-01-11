@@ -43,6 +43,19 @@
             "defaultValue" : 2
         },
         {
+            "name": "enableCoreAutoScaling",
+            "type": "BOOLEAN",
+            "label": "Enable Core Node Autoscaling",
+            "defaultValue": false
+        },
+        {
+            "name": "coreNodeAutoScalingPolicy",
+            "type": "TEXTAREA",
+            "label": "Core Node Autoscaling Policy",
+            "description": "Use JSON format, see here: https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-automatic-scaling.html",
+            "visibilityCondition": "model.enableCoreAutoScaling"
+        },
+        {
             "name": "taskInstanceType",
             "label" : "Instance type (task)",
             "type": "STRING",
@@ -55,6 +68,19 @@
             "type": "INT",
             "label" : "Instance count (task)",
             "defaultValue" : 0
+        },
+        {
+            "name": "enableTaskAutoScaling",
+            "type": "BOOLEAN",
+            "label": "Enable Task Node Autoscaling",
+            "defaultValue": false
+        },
+        {
+            "name": "taskNodeAutoScalingPolicy",
+            "type": "TEXTAREA",
+            "label": "Task Node Autoscaling Policy",
+            "description": "Use JSON format, see here: https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-automatic-scaling.html",
+            "visibilityCondition": "model.enableTaskAutoScaling"
         },
         {
             "name": "emrVersion",
@@ -121,7 +147,14 @@
             "description" : "IAM role to attach to the nodes of the cluster. Needs to have ability to call required AWS services from the cluster, like S3",
             "mandatory" : true
         },
-        
+        {
+            "name": "autoScalingRole",
+            "label": "Autoscaling Role",
+            "type": "STRING",
+            "description": "IAM role with permissions to add and terminate instances when scaling activities are triggered",
+            "defaultValue": "EMR_AutoScaling_DefaultRole",
+            "mandatory" : true
+        },
         {
             "type" : "SEPARATOR",
             "label":  "Hive Metastore"
@@ -248,7 +281,7 @@
             "name": "secretKey",
             "label": "AWS Secret Key",
             "description": "If empty, uses AWS credentials from the environment (IAM role, ~/.aws/credentials or AWS_ACCESS_KEY_ID environment variable)",
-            "type": "STRING",
+            "type": "PASSWORD",
             "visibilityCondition": "!model.useRole"
         },
         {
@@ -256,6 +289,12 @@
             "label": "EMR Security Configuration",
             "type": "STRING",
             "description": "EMR Security Configuration to use, must already exist"
+        },
+        {
+            "name": "bootstrapActions",
+            "label": "EMR Bootstrap Actions",
+            "type": "KEY_VALUE_LIST",
+            "description": "Key should be S3 path (s3://path/to/file) and value should be comma separated list of args: arg1,arg2,arg3, if needed"
         }
     ],
     

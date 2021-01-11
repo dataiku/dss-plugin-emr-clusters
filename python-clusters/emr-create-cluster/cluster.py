@@ -31,6 +31,22 @@ class MyCluster(Cluster):
             extraArgs["SecurityConfiguration"] = self.config["securityConfiguration"]
         if self.config.get("ebsRootVolumeSize", 0):
             extraArgs["EbsRootVolumeSize"] = int(self.config["ebsRootVolumeSize"])
+        if "bootstrapActions" in self.config:
+            extraArgs["BootstrapActions"] = []
+            
+            for idx, ba in enumerate(self.config["bootstrapActions"]):
+                if len(ba["to"]) > 0:
+                    args = ba["to"].split(",")
+                else:
+                    args = []
+                config = {
+                    "Name": "action_{}".format(idx),
+                    "ScriptBootstrapAction": {
+                        "Path": ba["from"],
+                        "Args": args
+                    }
+                }
+                extraArgs["BootstrapActions"].append(config)
         
         security_groups = []
         if "additionalSecurityGroups" in self.config:
@@ -53,20 +69,38 @@ class MyCluster(Cluster):
         if self.config.get("coreInstanceCount"):
             if not self.config.get("coreInstanceType"):
                 raise Exception("Missing core instance type")
-            instances['InstanceGroups'].append({
+            instance_group = {
                 'InstanceRole': 'CORE',
                 'InstanceType': self.config["coreInstanceType"],
                 'InstanceCount': int(self.config["coreInstanceCount"])
-            })
+            }
+            
+            if self.config.get("enableCoreAutoScaling"):
+                core_node_policy = json.loads(self.config.get("coreNodeAutoScalingPolicy"))
+                
+                for rule in core_node_policy["Rules"]:
+                    rule["Trigger"]["CloudWatchAlarmDefinition"]["Dimensions"] = [{"Key": "JobFlowId", "Value": "${emr.clusterId}"}]
+                instance_group["AutoScalingPolicy"] = core_node_policy
+                
+            instances['InstanceGroups'].append(instance_group)
 
         if self.config.get("taskInstanceCount"):
             if not self.config.get("taskInstanceType"):
                 raise Exception("Missing task instance type")
-            instances['InstanceGroups'].append({
+            instance_group = {
                 'InstanceRole': 'TASK',
                 'InstanceType': self.config["taskInstanceType"],
                 'InstanceCount': int(self.config["taskInstanceCount"])
-            })
+            }
+            
+            if self.config.get("enableTaskAutoScaling"):
+                task_node_policy = json.loads(self.config.get("taskNodeAutoScalingPolicy"))
+                
+                for rule in task_node_policy["Rules"]:
+                    rule["Trigger"]["CloudWatchAlarmDefinition"]["Dimensions"] = [{"Key": "JobFlowId", "Value": "${emr.clusterId}"}]
+                instance_group["AutoScalingPolicy"] = task_node_policy
+
+            instances['InstanceGroups'].append(instance_group)
 
         if self.config.get("securityConfig"):
             extraArgs["SecurityConfiguration"] = self.config.get("securityConfig")
@@ -145,6 +179,7 @@ class MyCluster(Cluster):
             VisibleToAllUsers=True,
             JobFlowRole=self.config["nodesRole"],
             ServiceRole=self.config["serviceRole"],
+            AutoScalingRole=self.config["autoScalingRole"],
             Tags=tags,
             **extraArgs
          )
