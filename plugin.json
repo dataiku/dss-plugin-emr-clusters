@@ -3,7 +3,7 @@
     "version": "0.0.2",
     "meta": {
         "label": "EMR clusters",
-        "description": "Dynamically create Amazon EMR clusters or attach to existing ones.",
+        "description": "Dynamically create Amazon EMR clusters or attach to existing ones. ⚠️ Starting with DSS version 14 this plugin is considered \"deprecated\" (see [deprecation notice](https://doc.dataiku.com/dss/latest/hadoop/dynamic-emr.html)).",
         "author": "Dataiku",
         "icon": "icon-amazon-emr icon-cloud",
         "licenseInfo": "Apache Software License",
